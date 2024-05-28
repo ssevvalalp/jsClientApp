@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <button onclick="getProducts()"> Get Products</button>
+    <div id="divProducts"></div>
+
+    <script>
+        const getProducts = async () => {
+            const response = await fetch("http://localhost:5265/api/products");
+            const products = await response.json();
+            console.log(products)
+
+            displayProducts(products);
+        }
+
+        const displayProducts = (products) => {
+            const parent = document.getElementById("divProducts");
+
+            products.forEach(prd => {
+                parent.innerHTML += `
+                <div>
+                       <h5>${prd.productName}</h5>
+                        <p>${prd.price}</p>
+                 </div>       
+                        `;
+            });
+        }
+
+    </script>
+
+</body>
+</html>
