@@ -6,28 +6,76 @@
 </head>
 <body>
     <button onclick="getProducts()"> Get Products</button>
+    <button onclick="getProductById()">Get Product</button>
+    <button onclick="login()">Login</button> 
     <div id="divProducts"></div>
 
     <script>
+       /*token alma işi burada yapılır*/
+        const login = async () => {
+            const response = await fetch("http://localhost:5265/api/users/login", {
+                headers: {
+                    "Accept": "application/json", //gönderilen data type
+                    "Content-Type": "application/json", //geriye dönecek bilgi
+                },
+                method: "POST", //hangi request için
+                body: JSON.stringify({email: 'ssevvalalp@gmail.com', password: '135790'})
+            });
+            const result = await response.json(); //dbden bilgi gelir
+            console.log(result);
+
+            localStorage.setItem("token", JSON.stringify(result.token)); //local storage'ta token bilgisini tutmak
+            }
+
         const getProducts = async () => {
-            const response = await fetch("http://localhost:5265/api/products");
-            const products = await response.json();
+            const response = await fetch("http://localhost:5265/api/products"); //fetch bir JS API'ı. Uygulama çalışırken proje adresi buraya alınır
+            const products = await response.json(); //response json'a dönüşür
             console.log(products)
 
             displayProducts(products);
         }
 
+        const getProductById = async () => {
+           const token =  JSON.parse(localStorage.getItem("token")); //localStorage'tan token bilgisi alınır ve talep içerisine token gönderilir
+            const response = await fetch("http://localhost:5265/api/products/4", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            const product = await response.json();
+            console.log(product);
+            displayProduct(product);
+        }
+
+        //DOM
         const displayProducts = (products) => {
             const parent = document.getElementById("divProducts");
 
             products.forEach(prd => {
                 parent.innerHTML += `
-                <div>
-                       <h5>${prd.productName}</h5>
-                        <p>${prd.price}</p>
-                 </div>       
-                        `;
+                    <div>
+                           <h5>${prd.productName}</h5>
+                            <p>${prd.price}</p>
+                     </div>
+                            `;
             });
+        }
+
+        /* function displayProducts(products)
+        {
+        }*/
+
+        const displayProduct = (product) => {
+            const parent = document.getElementById("divProducts");
+
+          
+                parent.innerHTML += `
+                  <div>
+                         <h5>${product.productName}</h5>
+                          <p>${product.price}</p>
+                   </div>
+                          `;
+           
         }
 
     </script>
